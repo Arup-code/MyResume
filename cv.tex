@@ -1,0 +1,215 @@
+%-----------------------------------------------------------------------------------------------------------------------------------------------%
+%	The MIT License (MIT)
+%
+%	Copyright (c) 2021 Jitin Nair
+%
+%	Permission is hereby granted, free of charge, to any person obtaining a copy
+%	of this software and associated documentation files (the "Software"), to deal
+%	in the Software without restriction, including without limitation the rights
+%	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+%	copies of the Software, and to permit persons to whom the Software is
+%	furnished to do so, subject to the following conditions:
+%	
+%	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+%	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+%	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+%	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+%	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+%	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+%	THE SOFTWARE.
+%	
+%
+%-----------------------------------------------------------------------------------------------------------------------------------------------%
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT DEFINITION
+%----------------------------------------------------------------------------------------
+
+% article class because we want to fully customize the page and not use a cv template
+\documentclass[a4paper,12pt]{article}
+
+%----------------------------------------------------------------------------------------
+%	FONT
+%----------------------------------------------------------------------------------------
+
+% % fontspec allows you to use TTF/OTF fonts directly
+% \usepackage{fontspec}
+% \defaultfontfeatures{Ligatures=TeX}
+
+% % modified for ShareLaTeX use
+% \setmainfont[
+% SmallCapsFont = Fontin-SmallCaps.otf,
+% BoldFont = Fontin-Bold.otf,
+% ItalicFont = Fontin-Italic.otf
+% ]
+% {Fontin.otf}
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES
+%----------------------------------------------------------------------------------------
+\usepackage{url}
+\usepackage{parskip} 	
+
+%other packages for formatting
+\RequirePackage{color}
+\RequirePackage{graphicx}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage[scale=0.9]{geometry}
+
+%tabularx environment
+\usepackage{tabularx}
+
+%for lists within experience section
+\usepackage{enumitem}
+
+% centered version of 'X' col. type
+\newcolumntype{C}{>{\centering\arraybackslash}X} 
+
+%to prevent spillover of tabular into next pages
+\usepackage{supertabular}
+\usepackage{tabularx}
+\newlength{\fullcollw}
+\setlength{\fullcollw}{0.47\textwidth}
+
+%custom \section
+\usepackage{titlesec}				
+\usepackage{multicol}
+\usepackage{multirow}
+
+%CV Sections inspired by: 
+%http://stefano.italians.nl/archives/26
+\titleformat{\section}{\Large\scshape\raggedright}{}{0em}{}[\titlerule]
+\titlespacing{\section}{0pt}{10pt}{10pt}
+
+%for publications
+\usepackage[style=authoryear,sorting=ynt, maxbibnames=2]{biblatex}
+
+%Setup hyperref package, and colours for links
+\usepackage[unicode, draft=false]{hyperref}
+\definecolor{linkcolour}{rgb}{0,0.2,0.6}
+\hypersetup{colorlinks,breaklinks,urlcolor=linkcolour,linkcolor=linkcolour}
+\addbibresource{citations.bib}
+\setlength\bibitemsep{1em}
+
+%for social icons
+\usepackage{fontawesome5}
+
+%debug page outer frames
+%\usepackage{showframe}
+
+
+% job listing environments
+\newenvironment{jobshort}[2]
+    {
+    \begin{tabularx}{\linewidth}{@{}l X r@{}}
+    \textbf{#1} & \hfill &  #2 \\[3.75pt]
+    \end{tabularx}
+    }
+    {
+    }
+
+\newenvironment{joblong}[2]
+    {
+    \begin{tabularx}{\linewidth}{@{}l X r@{}}
+    \textbf{#1} & \hfill &  #2 \\[3.75pt]
+    \end{tabularx}
+    \begin{minipage}[t]{\linewidth}
+    \begin{itemize}[nosep,after=\strut, leftmargin=1em, itemsep=3pt,label=--]
+    }
+    {
+    \end{itemize}
+    \end{minipage}    
+    }
+
+
+
+%----------------------------------------------------------------------------------------
+%	BEGIN DOCUMENT
+%----------------------------------------------------------------------------------------
+\begin{document}
+
+% non-numbered pages
+\pagestyle{empty} 
+
+%----------------------------------------------------------------------------------------
+%	TITLE
+%----------------------------------------------------------------------------------------
+
+% \begin{tabularx}{\linewidth}{ @{}X X@{} }
+% \huge{Your Name}\vspace{2pt} & \hfill \emoji{incoming-envelope} email@email.com \\
+% \raisebox{-0.05\height}\faGithub\ username \ | \
+% \raisebox{-0.00\height}\faLinkedin\ username \ | \ \raisebox{-0.05\height}\faGlobe \ mysite.com  & \hfill \emoji{calling} number
+% \end{tabularx}
+
+\begin{tabularx}{\linewidth}{@{} C @{}}
+\Huge{Arup Anil Chakravorty}\\[7.5pt]
+\href{https://github.com/Arup-code}{\raisebox{-0.05\height}\faGithub\ Arup-code} \ $|$ \ 
+\href{https://www.linkedin.com/in/arup-code}{\raisebox{-0.05\height}\faLinkedin\ Arup Chakravorty} \ $|$ \ 
+\href{mailto:chakravortyarup587@gmail.com}{\raisebox{-0.05\height}\faEnvelope \ chakravortyarup587@gmail.com} \ $|$ \ 
+\href{tel:+919836136646}{\raisebox{-0.05\height}\faMobile \ +91 9836136646}\\
+\end{tabularx}
+
+%----------------------------------------------------------------------------------------
+% EXPERIENCE SECTIONS
+%----------------------------------------------------------------------------------------
+
+%Interests/ Keywords/ Summary
+\section{Summary}
+Full-stack Developer with experience building, deploying, and maintaining scalable web and mobile applications backed by robust AWS cloud architectures for global user bases. Demonstrated ability to meet tight deadlines while contributing to team leadership, operational coordination, and cross-functional collaboration. Experienced in gathering and clarifying product requirements through stakeholder discussions and supporting product demonstrations. Hands-on experience across diverse domains, including OTT platforms, social media applications, AI-powered solutions, e-commerce systems, and specialized products such as GIS-based marketplace applications. 
+
+%Skills
+\section{Skills}
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+Frontend Development &  \normalsize{Flutter, React, Next.js, HTML5, CSS3, JavaScript/TypeScript}\\
+Backend Development &  \normalsize{Node.js, Java, SQL, RESTful APIs, Microservices}\\
+Cloud \& DevOps &  \normalsize{AWS (EC2, S3, Lambda, RDS, CloudFront), Git, CI/CD Pipelines, Docker}\\  
+\end{tabularx}
+
+%Experience
+\section{Work Experience}
+
+\textbf{Sunyam Software LLP} \\[0.1em]
+\begin{joblong}{Senior Full-Stack Engineer}{Aug 2019 -- Nov 2025}
+  \item Engineered and deployed full-stack web and mobile applications using React, Next.js, Flutter, and Node.js, serving millions of users globally with zero-downtime deployments.
+  \item Architected and optimized AWS cloud infrastructure (EC2, S3, Lambda, RDS, CloudFront) ensuring 99.9\% uptime, 40\% reduction in latency, and cost-efficient scaling.
+  \item Designed and implemented robust CI/CD pipelines using Git and automated deployment tools, reducing release cycles by 60\% and improving team productivity.
+  \item Mentored 5+ junior engineers on best practices in full-stack development, system design, and cloud architecture while maintaining code quality standards.
+  \item Led technical discussions with stakeholders to gather requirements, provide technical feasibility assessments, and deliver product demonstrations.
+  \item Optimized database queries in SQL, implemented caching strategies, and managed microservices architecture across distributed systems.
+\end{joblong}
+  
+%Projects
+\section{Projects}
+
+\begin{tabularx}{\linewidth}{ @{}l r@{} }
+\textbf{Some Project} & \hfill \href{https://some-link.com}{Link to Demo} \\[3.75pt]
+\multicolumn{2}{@{}X@{}}{long long line of blah blah that will wrap when the table fills the column width long long line of blah blah that will wrap when the table fills the column width long long line of blah blah that will wrap when the table fills the column width long long line of blah blah that will wrap when the table fills the column width}  \\
+\end{tabularx}
+
+%----------------------------------------------------------------------------------------
+%	EDUCATION
+%----------------------------------------------------------------------------------------
+\section{Education}
+\begin{tabularx}{\linewidth}{@{}l X@{}}	
+2030 - present & PhD (Subject) at \textbf{University} \hfill \normalsize (GPA: 4.0/4.0) \\
+
+2023 - 2027 & Bachelor's Degree at \textbf{College} \hfill (GPA: 4.0/4.0) \\ 
+
+2022 & Class 12th Some Board \hfill  (Grades) \\
+
+2021 & Class 10th Some Board \hfill  (Grades) \\
+\end{tabularx}
+
+% %----------------------------------------------------------------------------------------
+% %	PUBLICATIONS
+% %----------------------------------------------------------------------------------------
+% \section{Publications}
+% \begin{refsection}[citations.bib]
+% \nocite{*}
+% \printbibliography[heading=none]
+% \end{refsection}
+
+\vfill
+\center{\footnotesize Last updated: \today}
+
+\end{document}
