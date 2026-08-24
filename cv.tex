@@ -1,213 +1,165 @@
-%-----------------------------------------------------------------------------------------------------------------------------------------------%
-%	The MIT License (MIT)
-%
-%	Copyright (c) 2021 Jitin Nair
-%
-%	Permission is hereby granted, free of charge, to any person obtaining a copy
-%	of this software and associated documentation files (the "Software"), to deal
-%	in the Software without restriction, including without limitation the rights
-%	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-%	copies of the Software, and to permit persons to whom the Software is
-%	furnished to do so, subject to the following conditions:
-%	
-%	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-%	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-%	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-%	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-%	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-%	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-%	THE SOFTWARE.
-%	
-%
-%-----------------------------------------------------------------------------------------------------------------------------------------------%
+%-----------------------------------------------------------------------------------------------------%
+%	Base template: The MIT License (MIT) - Copyright (c) 2021 Jitin Nair
+%	Restructured for ATS-safe single-column parsing and MAANG-style impact bullets.
+%-----------------------------------------------------------------------------------------------------%
 
-%----------------------------------------------------------------------------------------
-%	DOCUMENT DEFINITION
-%----------------------------------------------------------------------------------------
+\documentclass[a4paper,10pt]{article}
 
-% article class because we want to fully customize the page and not use a cv template
-\documentclass[a4paper,12pt]{article}
+%-----------------------------------------------------------------------------------------------------%
+%	FONTS
+%-----------------------------------------------------------------------------------------------------%
+\usepackage[utf8]{inputenc}
 
-%----------------------------------------------------------------------------------------
-%	FONT
-%----------------------------------------------------------------------------------------
+% XCharter reads far better than Computer Modern on screen and in print, but fall back
+% gracefully so the build never breaks on a minimal TeX installation.
+\IfFileExists{XCharter.sty}{%
+  \usepackage[T1]{fontenc}%
+  \usepackage[defaultsups]{XCharter}%
+}{}
 
-% % fontspec allows you to use TTF/OTF fonts directly
-% \usepackage{fontspec}
-% \defaultfontfeatures{Ligatures=TeX}
+% ATS: fi/ff/ffi ligatures extract as missing characters in many resume parsers
+% ("defined" -> "dened"), so switch them off. Costs nothing visually.
+\usepackage[expansion=false]{microtype}
+% with expansion off, give TeX a little slack so long tech terms never overflow the margin
+\setlength{\emergencystretch}{1.2em}
+\DisableLigatures{encoding = *, family = *}
 
-% % modified for ShareLaTeX use
-% \setmainfont[
-% SmallCapsFont = Fontin-SmallCaps.otf,
-% BoldFont = Fontin-Bold.otf,
-% ItalicFont = Fontin-Italic.otf
-% ]
-% {Fontin.otf}
-
-%----------------------------------------------------------------------------------------
+%-----------------------------------------------------------------------------------------------------%
 %	PACKAGES
-%----------------------------------------------------------------------------------------
+%-----------------------------------------------------------------------------------------------------%
 \usepackage{url}
-\usepackage{parskip} 	
+\usepackage{parskip}
+\setlength{\parskip}{0.2\baselineskip}
 
-%other packages for formatting
 \RequirePackage{color}
 \RequirePackage{graphicx}
 \usepackage[usenames,dvipsnames]{xcolor}
-\usepackage[scale=0.9]{geometry}
+\usepackage[a4paper,top=0.38in,bottom=0.25in,left=0.55in,right=0.55in]{geometry}
 
-%tabularx environment
-\usepackage{tabularx}
-
-%for lists within experience section
 \usepackage{enumitem}
-
-% centered version of 'X' col. type
-\newcolumntype{C}{>{\centering\arraybackslash}X} 
-
-%to prevent spillover of tabular into next pages
-\usepackage{supertabular}
-\usepackage{tabularx}
-\newlength{\fullcollw}
-\setlength{\fullcollw}{0.47\textwidth}
-
-%custom \section
-\usepackage{titlesec}				
-\usepackage{multicol}
-\usepackage{multirow}
-
-%CV Sections inspired by: 
-%http://stefano.italians.nl/archives/26
-\titleformat{\section}{\Large\scshape\raggedright}{}{0em}{}[\titlerule]
-\titlespacing{\section}{0pt}{10pt}{10pt}
-
-%for publications
-\usepackage[style=authoryear,sorting=ynt, maxbibnames=2]{biblatex}
-
-%Setup hyperref package, and colours for links
-\usepackage[unicode, draft=false]{hyperref}
-\definecolor{linkcolour}{rgb}{0,0.2,0.6}
-\hypersetup{colorlinks,breaklinks,urlcolor=linkcolour,linkcolor=linkcolour}
-\addbibresource{citations.bib}
-\setlength\bibitemsep{1em}
-
-%for social icons
+\usepackage{titlesec}
 \usepackage{fontawesome5}
 
-%debug page outer frames
-%\usepackage{showframe}
+%-----------------------------------------------------------------------------------------------------%
+%	COLOURS
+%-----------------------------------------------------------------------------------------------------%
+\definecolor{accent}{HTML}{16365C}      % deep navy: name, section rules, headline numbers
+\definecolor{rulegrey}{HTML}{16365C}
 
+\usepackage[unicode, draft=false]{hyperref}
+\hypersetup{colorlinks,breaklinks,urlcolor=accent,linkcolor=accent,
+            pdftitle={Arup Anil Chakravorty - Resume},pdfauthor={Arup Anil Chakravorty}}
 
-% job listing environments
-\newenvironment{jobshort}[2]
-    {
-    \begin{tabularx}{\linewidth}{@{}l X r@{}}
-    \textbf{#1} & \hfill &  #2 \\[3.75pt]
-    \end{tabularx}
-    }
-    {
-    }
+% ATS: emit a clean Unicode text layer rather than raw font glyph codes
+\input{glyphtounicode}
+\pdfgentounicode=1
 
-\newenvironment{joblong}[2]
-    {
-    \begin{tabularx}{\linewidth}{@{}l X r@{}}
-    \textbf{#1} & \hfill &  #2 \\[3.75pt]
-    \end{tabularx}
-    \begin{minipage}[t]{\linewidth}
-    \begin{itemize}[nosep,after=\strut, leftmargin=1em, itemsep=3pt,label=--]
-    }
-    {
-    \end{itemize}
-    \end{minipage}    
-    }
+%-----------------------------------------------------------------------------------------------------%
+%	SECTION + ENTRY FORMATTING
+%-----------------------------------------------------------------------------------------------------%
+\titleformat{\section}
+  {\large\bfseries\scshape\raggedright\color{accent}}{}{0em}{}
+  [\vspace{1pt}{\color{rulegrey}\titlerule[1.1pt]}]
+\titlespacing{\section}{0pt}{7pt}{5pt}
 
+% Single-column, table-free headings so ATS parsers read everything in linear order.
+% #1 = organisation / project, #2 = right-aligned dates or link, #3 = role / tech stack
+\newcommand{\entry}[3]{%
+  \vspace{1pt}\noindent{\normalsize\bfseries #1}\hfill{\small #2}\\[0.5pt]
+  \noindent{\small\itshape #3}\par\vspace{-2pt}%
+}
 
+% Headline numbers. Colour is reserved for these so results carry the eye down the page;
+% plain \textbf marks the single key idea of a bullet.
+\newcommand{\metric}[1]{\textbf{\color{accent}#1}}
 
-%----------------------------------------------------------------------------------------
+\newenvironment{bullets}
+  {\begin{itemize}[nosep,after=\strut,leftmargin=1.05em,itemsep=1pt,topsep=1.2pt,label=\textcolor{accent}{\textbf{\textendash}}]}
+  {\end{itemize}\vspace{1pt}}
+
+\newcommand{\skillrow}[2]{\noindent\textbf{#1}\hspace{0.35em}#2\par\vspace{1.5pt}}
+
+%-----------------------------------------------------------------------------------------------------%
 %	BEGIN DOCUMENT
-%----------------------------------------------------------------------------------------
+%-----------------------------------------------------------------------------------------------------%
 \begin{document}
+\pagestyle{empty}
+\raggedbottom
 
-% non-numbered pages
-\pagestyle{empty} 
+%-----------------------------------------------------------------------------------------------------%
+%	HEADER
+%-----------------------------------------------------------------------------------------------------%
+\begin{center}
+{\Huge\bfseries\color{accent} Arup Anil Chakravorty}\\[5pt]
+{\small
+\href{mailto:chakravortyarup587@gmail.com}{\raisebox{-0.1\height}\faEnvelope\ chakravortyarup587@gmail.com}\;\textcolor{accent}{$|$}\;
+\href{tel:+919836136646}{\raisebox{-0.1\height}\faPhone\ +91 98361 36646}\;\textcolor{accent}{$|$}\;
+\href{https://github.com/Arup-code}{\raisebox{-0.1\height}\faGithub\ Arup-code}\;\textcolor{accent}{$|$}\;
+\href{https://www.linkedin.com/in/arup-code}{\raisebox{-0.1\height}\faLinkedin\ arup-code}
+}
+\end{center}
+\vspace{-4pt}
 
-%----------------------------------------------------------------------------------------
-%	TITLE
-%----------------------------------------------------------------------------------------
-
-% \begin{tabularx}{\linewidth}{ @{}X X@{} }
-% \huge{Your Name}\vspace{2pt} & \hfill \emoji{incoming-envelope} email@email.com \\
-% \raisebox{-0.05\height}\faGithub\ username \ | \
-% \raisebox{-0.00\height}\faLinkedin\ username \ | \ \raisebox{-0.05\height}\faGlobe \ mysite.com  & \hfill \emoji{calling} number
-% \end{tabularx}
-
-\begin{tabularx}{\linewidth}{@{} C @{}}
-\Huge{Arup Anil Chakravorty}\\[7.5pt]
-\href{https://github.com/Arup-code}{\raisebox{-0.05\height}\faGithub\ Arup-code} \ $|$ \ 
-\href{https://www.linkedin.com/in/arup-code}{\raisebox{-0.05\height}\faLinkedin\ Arup Chakravorty} \ $|$ \ 
-\href{mailto:chakravortyarup587@gmail.com}{\raisebox{-0.05\height}\faEnvelope \ chakravortyarup587@gmail.com} \ $|$ \ 
-\href{tel:+919836136646}{\raisebox{-0.05\height}\faMobile \ +91 9836136646}\\
-\end{tabularx}
-
-%----------------------------------------------------------------------------------------
-% EXPERIENCE SECTIONS
-%----------------------------------------------------------------------------------------
-
-%Interests/ Keywords/ Summary
+%-----------------------------------------------------------------------------------------------------%
+%	SUMMARY
+%-----------------------------------------------------------------------------------------------------%
 \section{Summary}
-\textbf{Full-stack Developer} with experience building, deploying, and maintaining \textbf{scalable web and mobile applications} backed by robust \textbf{AWS cloud architectures} for global user bases. Demonstrated ability to meet tight deadlines while contributing to \textbf{team leadership}, operational coordination, and \textbf{cross-functional collaboration}. Experienced in gathering and clarifying product requirements through stakeholder discussions and supporting product demonstrations. Hands-on experience across diverse domains, including \textbf{OTT platforms}, \textbf{social media applications}, \textbf{Agentic AI Apps powered by LangGraph and OpenAI}, \textbf{e-commerce systems}, and specialized products such as \textbf{GIS-based marketplace applications}. 
+Full-stack engineer with \metric{6+ years} shipping production systems for \metric{millions of users} across OTT, social, e-commerce, and GIS marketplace products, owning delivery end to end from AWS infrastructure through React, Flutter, and Java/Python microservices. Currently \textbf{founding engineer} building a multi-service consumer platform from zero, with depth in \textbf{LLM and agentic systems}: LangGraph orchestration, hybrid retrieval, guardrails, and human-in-the-loop approval design.
 
-%Skills
-\section{Skills}
-\begin{tabularx}{\linewidth}{@{}X@{}}
-Flutter, React, Next.js, LangGraph, LangChain, OpenAI, Python, Fastapi, TypeScript, Node.js, Java, SQL, RESTful APIs, Microservices, AWS (EC2, S3, Lambda, RDS, CloudFront), Git, CI/CD Pipelines, Docker
-\end{tabularx}
+%-----------------------------------------------------------------------------------------------------%
+%	SKILLS
+%-----------------------------------------------------------------------------------------------------%
+\section{Technical Skills}
+\begingroup\setlength{\parskip}{0pt}
+\skillrow{Languages:}{Java, Python, TypeScript, JavaScript, Dart, SQL}
+\skillrow{Frontend:}{React, Next.js, Flutter (Android + iOS), Vite, HTML/CSS}
+\skillrow{Backend:}{Spring Boot, FastAPI, Node.js, REST APIs, Microservices, JWT Auth, Idempotency Design}
+\skillrow{AI / ML:}{LangGraph, LangChain, OpenAI/OpenRouter APIs, RAG, Hybrid Retrieval (BM25 + RRF), LLM Guardrails, Offline Eval Harnesses, Image Detection}
+\skillrow{Cloud, Data \& DevOps:}{AWS (EC2, S3, Lambda, RDS, CloudFront), Docker \& Compose, CI/CD, Git, Nginx, Firebase, PostgreSQL, MySQL, SQLAlchemy, Alembic, Query Optimization, pytest}
+\endgroup
 
-%Experience
+%-----------------------------------------------------------------------------------------------------%
+%	EXPERIENCE
+%-----------------------------------------------------------------------------------------------------%
 \section{Work Experience}
 
-\textbf{Sunyam Software LLP} \\[0.1em]
-\begin{joblong}{Senior Full-Stack Engineer}{Aug 2019 -- Nov 2025}
-  \item Engineered and deployed full-stack web and mobile applications using React, Next.js, Flutter, and Node.js, serving millions of users globally with zero-downtime deployments.
-  \item Architected and optimized AWS cloud infrastructure (EC2, S3, Lambda, RDS, CloudFront) ensuring 99.9\% uptime, 40\% reduction in latency, and cost-efficient scaling.
-  \item Built and productionized AI solutions by training image detection models and developing agentic applications with LangGraph and OpenAI APIs, driving intelligent automation and improving system capabilities across use cases.
-  \item Designed and implemented robust CI/CD pipelines using Git and automated deployment tools, reducing release cycles by 60\% and improving team productivity.
-  \item Mentored 5+ junior engineers on best practices in full-stack development, system design, and cloud architecture while maintaining code quality standards.
-  \item Led technical discussions with stakeholders to gather requirements, provide technical feasibility assessments, and deliver product demonstrations.
-  \item Optimized database queries in SQL, implemented caching strategies, and managed microservices architecture across distributed systems.
-\end{joblong}
-  
-%Projects
-% \section{Projects}
+\entry{Guchhait Software Solutions Pvt. Ltd.}{Jul 2026 \textendash{} Present}{Founding Engineer \textemdash{} TasteDash (cross-platform food delivery)}
+\begin{bullets}
+  \item Joined as \textbf{founding engineer} with no codebase or infrastructure in place; defined the Java Spring Boot and Python \textbf{microservice decomposition} behind clean REST contracts, plus the containerized environments and build checks the team now works on, so ordering, catalog, and delivery ship independently rather than as one blocking monolith.
+  \item Owned the full mobile surface for a team too small to staff two native clients; shipped a \textbf{single Flutter codebase to both Android and iOS}, holding every feature at one implementation rather than two.
+\end{bullets}
 
-% \begin{tabularx}{\linewidth}{ @{}l r@{} }
-% \textbf{Dexcode} & \hfill \href{https://dexcode.app/}{Link to Demo} \\[3.75pt]
-% \multicolumn{2}{@{}X@{}}{long long line of blah blah that will wrap when the table fills the column width long long line of blah blah that will wrap when the table fills the column width long long line of blah blah that will wrap when the table fills the column width long long line of blah blah that will wrap when the table fills the column width}  \\
-% \end{tabularx}
+\entry{Sunyam Software LLP}{Aug 2019 \textendash{} Nov 2025}{Senior Full-Stack Engineer}
+\begin{bullets}
+  \item Re-architected the AWS footprint of a global OTT and social platform that had outgrown its design, adding autoscaling, edge caching, and SQL tuning to \metric{cut latency 40\%} at \metric{99.9\% uptime} for millions of users.
+  \item Manual, error-prone deploys capped release velocity; built \textbf{Git-based CI/CD pipelines} with automated testing and staged rollouts, \metric{shortening release cycles 60\%} and making zero-downtime deployment the default.
+  \item With no in-house ML capability on the team, \textbf{trained image-detection models} and built \textbf{agentic LangGraph + \mbox{OpenAI} applications} that automated classification and decision workflows previously done by hand.
+  \item Mentored \metric{5+ junior engineers} on full-stack development, system design, and cloud architecture while acting as technical point of contact for requirements and demos.
+\end{bullets}
 
-%----------------------------------------------------------------------------------------
+%-----------------------------------------------------------------------------------------------------%
+%	PROJECTS
+%-----------------------------------------------------------------------------------------------------%
+\section{Projects}
+
+\entry{TrustDesk \textemdash{} AI-First Customer Support Operations Platform}{\href{https://trustdesk.dexcode.app}{\faGlobe\ trustdesk.dexcode.app}}{Java 21, Spring Boot 3, FastAPI, LangGraph, React 19, MySQL, Docker Compose}
+\begin{bullets}
+  \item Architected \textbf{three independently deployable services} (Spring Boot system-of-record, FastAPI AI/retrieval service, React 19 frontend) behind single-origin Nginx routing, with no backend, database, or AI port exposed to the host.
+  \item Designed the AI as \textbf{recommend-only}: the backend alone executes sensitive tool actions, and only after human approval, with retries absorbed by a \textbf{database-level idempotency constraint}, so a duplicate submit returns the existing action instead of executing it twice.
+  \item Built \textbf{hybrid retrieval} fusing BM25 with embedding similarity via Reciprocal Rank Fusion, degrading to BM25-only on provider failure rather than downing the service; a labeled eval harness over the \textit{real} pipelines scored \metric{100\% unsafe-action block rate, citation coverage, and triage accuracy} across 8 cases including \metric{3 prompt-injection attacks}.
+\end{bullets}
+
+\entry{DermaCare AI \textemdash{} Skin Analysis \& Personalized Report Backend}{}{FastAPI, LangChain, OpenRouter, SQLAlchemy 2.0, PostgreSQL, Firebase}
+\begin{bullets}
+  \item Built the FastAPI backend for a skin-scan mobile app: Firebase ID-token auth, Storage-backed uploads, and rate limiting fronting a \textbf{two-stage LangChain pipeline} over OpenRouter \textemdash{} a vision model detects conditions, a text model writes the report \textemdash{} each stage \textbf{swappable by config}.
+  \item Modeled data in SQLAlchemy 2.0 with Alembic migrations on PostgreSQL, moved scans \textbf{off the request path} so uploads never block on two LLM round-trips, and made the suite runnable with \textbf{zero credentials or network calls} by stubbing Firebase and both LLM stages over SQLite.
+\end{bullets}
+
+%-----------------------------------------------------------------------------------------------------%
 %	EDUCATION
-%----------------------------------------------------------------------------------------
+%-----------------------------------------------------------------------------------------------------%
 \section{Education}
-\begin{tabularx}{\linewidth}{@{}l X@{}}	
-2025 - 2026 & Backend Engineering Launchpad \textbf{Airtribe} \hfill \normalsize \\
-
-2016 - 2019 & Bachelor's Degree at Commerce \textbf{Calcutta University} \hfill \\ 
-
-2014 - 2016 & Higher Secondary Certificate \textbf{The Maharashtra State Board} \hfill \\
-
-\end{tabularx}
-
-% %----------------------------------------------------------------------------------------
-% %	PUBLICATIONS
-% %----------------------------------------------------------------------------------------
-% \section{Publications}
-% \begin{refsection}[citations.bib]
-% \nocite{*}
-% \printbibliography[heading=none]
-% \end{refsection}
-
-\vfill
-\center{\footnotesize Last updated: \today}
+\noindent
+\textbf{Backend Engineering Launchpad}, Airtribe (2025\textendash{}26) \quad\textcolor{accent}{$|$}\quad \textbf{B.Com}, Calcutta University (2016\textendash{}19)
 
 \end{document}
