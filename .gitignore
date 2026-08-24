@@ -1,0 +1,15 @@
+# LaTeX build artifacts.
+# These were previously committed; a stale cv.bcf from the old biblatex setup made
+# latexmk fail even though cv.tex no longer loads biblatex. Keep them out of git.
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*-SAVE-ERROR

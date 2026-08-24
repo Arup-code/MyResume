@@ -10,19 +10,23 @@
 %-----------------------------------------------------------------------------------------------------%
 \usepackage[utf8]{inputenc}
 
-% XCharter reads far better than Computer Modern on screen and in print, but fall back
-% gracefully so the build never breaks on a minimal TeX installation.
-\IfFileExists{XCharter.sty}{%
+% Charter (psnfss) ships with every LaTeX distribution - TeX Live and MiKTeX alike - so
+% nothing has to be installed on demand. Guarded anyway: an absent font degrades to the
+% default roman rather than failing the build.
+\IfFileExists{charter.sty}{%
   \usepackage[T1]{fontenc}%
-  \usepackage[defaultsups]{XCharter}%
+  \usepackage{charter}%
 }{}
 
 % ATS: fi/ff/ffi ligatures extract as missing characters in many resume parsers
 % ("defined" -> "dened"), so switch them off. Costs nothing visually.
-\usepackage[expansion=false]{microtype}
+% Guarded so the resume still builds where microtype is unavailable.
+\IfFileExists{microtype.sty}{%
+  \usepackage[expansion=false]{microtype}%
+  \DisableLigatures{encoding = *, family = *}%
+}{}
 % with expansion off, give TeX a little slack so long tech terms never overflow the margin
 \setlength{\emergencystretch}{1.2em}
-\DisableLigatures{encoding = *, family = *}
 
 %-----------------------------------------------------------------------------------------------------%
 %	PACKAGES
@@ -38,21 +42,31 @@
 
 \usepackage{enumitem}
 \usepackage{titlesec}
-\usepackage{fontawesome5}
+\IfFileExists{fontawesome5.sty}{%
+  \usepackage{fontawesome5}%
+}{%
+  % No FontAwesome installed: drop the glyphs, keep the contact text readable.
+  \providecommand{\faEnvelope}{}\providecommand{\faPhone}{}%
+  \providecommand{\faGithub}{}\providecommand{\faLinkedin}{}\providecommand{\faGlobe}{}%
+}
 
 %-----------------------------------------------------------------------------------------------------%
 %	COLOURS
 %-----------------------------------------------------------------------------------------------------%
-\definecolor{accent}{HTML}{16365C}      % deep navy: name, section rules, headline numbers
-\definecolor{rulegrey}{HTML}{16365C}
+% rgb rather than HTML: the HTML model needs xcolor, while rgb works with the base
+% color package too, so one less hard dependency. This is #16365C, a deep navy.
+\definecolor{accent}{rgb}{0.086,0.212,0.361}
+\definecolor{rulegrey}{rgb}{0.086,0.212,0.361}
 
 \usepackage[unicode, draft=false]{hyperref}
 \hypersetup{colorlinks,breaklinks,urlcolor=accent,linkcolor=accent,
             pdftitle={Arup Anil Chakravorty - Resume},pdfauthor={Arup Anil Chakravorty}}
 
 % ATS: emit a clean Unicode text layer rather than raw font glyph codes
-\input{glyphtounicode}
-\pdfgentounicode=1
+\IfFileExists{glyphtounicode.tex}{%
+  \input{glyphtounicode}%
+  \ifdefined\pdfgentounicode\pdfgentounicode=1\fi
+}{}
 
 %-----------------------------------------------------------------------------------------------------%
 %	SECTION + ENTRY FORMATTING
